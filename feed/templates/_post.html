@@ -1,0 +1,22 @@
+<article class="post">
+  <div class="head">
+    {% if post.author.profile.avatar_url %}<img class="avatar" src="{{ post.author.profile.avatar_url }}" alt="">{% else %}<div class="avatar ph">{{ post.author.username|first|upper }}</div>{% endif %}
+    <div>
+      <a href="{% url 'profile' post.author.username %}"><strong>@{{ post.author.username }}</strong></a>
+      <span class="muted">· {{ post.created|timesince }} ago</span>
+    </div>
+  </div>
+  <p class="body">{{ post.content|linebreaksbr }}</p>
+  <div class="actions">
+    <form method="post" action="{% url 'like_toggle' post.pk %}" class="like-form">{% csrf_token %}
+      <button class="like {% if user in post.likes.all %}liked{% endif %}">
+        <span class="heart">{% if user in post.likes.all %}♥{% else %}♡{% endif %}</span>
+        <span class="count">{{ post.likes.count }}</span>
+      </button>
+    </form>
+    <a href="{% url 'post_detail' post.pk %}">💬 {{ post.comments.count }}</a>
+    {% if post.author == user %}
+    <form method="post" action="{% url 'post_delete' post.pk %}" data-confirm="Delete this post?" class="inline">{% csrf_token %}<button class="link danger">Delete</button></form>
+    {% endif %}
+  </div>
+</article>

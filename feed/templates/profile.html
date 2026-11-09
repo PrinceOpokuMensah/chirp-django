@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}@{{ owner.username }} · Chirp{% endblock %}
+
+{% block content %}
+
+<div class="profile-cover">
+    {% if owner.profile.cover_url %}
+        <img src="{{ owner.profile.cover_url }}" alt="Cover photo">
+    {% else %}
+        <div class="default-cover"></div>
+    {% endif %}
+</div>
+
+<section class="profile-card">
+
+    <div class="profile-header">
+
+        {% if owner.profile.avatar_url %}
+            <img class="avatar big"
+                 src="{{ owner.profile.avatar_url }}"
+                 alt="Profile picture">
+        {% else %}
+            <div class="avatar big ph">
+                {{ owner.username|first|upper }}
+            </div>
+        {% endif %}
+
+        <div class="profile-info">
+            <h1>@{{ owner.username }}</h1>
+
+            <p>{{ owner.profile.bio|default:"Welcome to my Chirp profile!" }}</p>
+
+            <div class="profile-stats">
+                <span><strong>{{ owner.posts.count }}</strong> Posts</span>
+                <span><strong>{{ owner.profile.followers.count }}</strong> Followers</span>
+                <span><strong>{{ owner.profile.following.count }}</strong> Following</span>
+            </div>
+
+            {% if owner == user %}
+                <a class="btn" href="{% url 'profile_edit' %}">
+                    Edit Profile
+                </a>
+            {% else %}
+                <form method="post" action="{% url 'follow_toggle' owner.username %}">
+                    {% csrf_token %}
+                    <button class="btn {% if is_following %}outline{% endif %}">
+                        {% if is_following %}Unfollow{% else %}Follow{% endif %}
+                    </button>
+                </form>
+            {% endif %}
+
+        </div>
+    </div>
+
+</section>
+
+<h2>My Posts</h2>
+
+{% for post in posts %}
+    {% include "_post.html" %}
+{% empty %}
+    <p class="muted">No posts yet.</p>
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+{% include "_post.html" %}
+<h3>Comments</h3>
+<form method="post" class="comment-form">{% csrf_token %}{{ form.content }}<button class="btn">Comment</button></form>
+{% for c in post.comments.all %}
+<div class="comment"><a href="{% url 'profile' c.author.username %}"><strong>@{{ c.author.username }}</strong></a>
+  <span class="muted">· {{ c.created|timesince }} ago</span><p>{{ c.content }}</p></div>
+{% empty %}<p class="muted">No comments yet.</p>{% endfor %}
+{% endblock %}
